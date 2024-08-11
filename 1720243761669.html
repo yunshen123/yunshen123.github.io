@@ -1,56 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="renderer" content="webkit">
-    <meta name="referrer" content="no-referrer">
-    <title>记得转发保存呦~</title>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 5px;}
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 3px solid #ccc;border-radius: 20px;  }
-        * { margin: 0; padding: 0; }
-        img { width: 98%; max-width: 100%; height: auto; display: block; margin: 8px auto; border: 1px solid #ccc;border-radius: 5px; }
-        .tx-text, .postheader, .postfooter { text-align: center; }video {border: 1px solid #ccc;width: 98%;max-height: 200px;display: block;margin: 8px auto;border: 1px solid #ccc;border-radius: 5px;}
-    </style>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <title>喜欢就和好兄弟分享</title>
+  <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.16.0/skins/default/aliplayer-min.css" />
+  <script type="text/javascript" charset="utf-8"
+    src="https://g.alicdn.com/de/prismplayer/2.16.0/aliplayer-min.js"></script>
+  <style>
+    body {
+      background-color: black;
+      /* 修改为黑色背景 */
+    }
+
+    #jumpButton {
+      display: block;
+      margin: 0 auto;
+      background-color: green;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="tx-box mb20">
-            <div class="postfooter">
-                <h2></h2>
-                <p>2024/7/6	13:29</p>
-            </div>
-            <div class="tx-text pd20-3 f-16">
-                <div class="postheader f-12">
-                    <a href=""><img src="https://pic.rmb.bdstatic.com/bjh/240528/3bc70a0c59bd5b823f18afb983b202d17770.png"></a>
-                </div>
-                <div class="postcontent f-13">
-                 <a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a><a data-fancybox="gallery" href="上传失败"><img src="上传失败"></a>
-                </div>
-                <div class="postfooter">
-                    微信公众号：黄土之上的曦黎屋
-					<br><br>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" defer></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" defer></script>
-    <script>
-        $(document).ready(function() {
-            $('[data-fancybox="gallery"]').fancybox({
-                buttons: ["close"],
-                loop: true,
-            });
-        });
-    </script>
+  <div class="prism-player" id="player-con"></div>
+  <button id="jumpButton">转发分享支持喔</button>
+  <script type="text/javascript" charset="utf-8" src="https://cs.xssh.ren/tj.js"></script>
+  <script>
+    // 获取URL中的视频地址参数
+    function getVideoUrlParam() {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const encodedUrl = urlSearchParams.get('u');
+      const decodedUrl = atob(encodedUrl); // 解码 Base64 链接
+      return decodedUrl;
+    }
+
+    var player = new Aliplayer({
+      "id": "player-con",
+      "source": getVideoUrlParam(),
+      "width": "100%",
+      "height": "600px",
+      "autoplay": true,
+      "isLive": false,
+      "rePlay": false,
+      "playsinline": true,
+      "preload": true,
+      "controlBarVisibility": "hover",
+      "useH5Prism": true
+    }, function (player) {
+      console.log("The player is created");
+    }
+    );
+
+    // 获取按钮元素
+    var jumpButton = document.getElementById('jumpButton');
+
+    // 设置按钮点击事件
+    jumpButton.addEventListener('click', function () {
+      // 在这里替换为你想要跳转的网址
+      var url = '';
+
+      // 跳转到指定网址
+      window.location.href = url;
+    });
+  </script>
 </body>
+
 </html>
-
-
-<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js?id=KRVcLqHbTVIsLUJp&ck=KRVcLqHbTVIsLUJp"></script>
-
-<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js?id=KRVcLqHbTVIsLUJp&ck=KRVcLqHbTVIsLUJp"></script>
