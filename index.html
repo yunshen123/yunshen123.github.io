@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="IE=edge">
@@ -14,8 +13,14 @@
     body {
       background-color: black;
       /* 修改为黑色背景 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
-
     #jumpButton {
       display: block;
       margin: 0 auto;
@@ -25,10 +30,19 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .prism-player {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
   </style>
 </head>
-
 <body>
   <div class="prism-player" id="player-con"></div>
   <button id="jumpButton">记得转发给好盆友喔</button>
@@ -41,7 +55,7 @@
       const decodedUrl = atob(encodedUrl); // 解码 Base64 链接
       return decodedUrl;
     }
-
+    
     var player = new Aliplayer({
       "id": "player-con",
       "source": getVideoUrlParam(),
@@ -56,23 +70,95 @@
       "useH5Prism": true
     }, function (player) {
       console.log("The player is created");
-    }
-    );
-
+    });
+    
     // 获取按钮元素
     var jumpButton = document.getElementById('jumpButton');
-
     // 设置按钮点击事件
     jumpButton.addEventListener('click', function () {
       // 在这里替换为你想要跳转的网址
       var url = 'https://mp.weixin.qq.com/s/er1BcRxM1olVafCx5UQrxQ';
-
       // 跳转到指定网址
       window.location.href = url;
     });
+
+    // 禁用右键菜单
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // 禁用文本选择
+    document.addEventListener('selectstart', function(e) {
+      e.preventDefault();
+    });
+
+    // 禁用复制/剪切事件
+    document.addEventListener('copy', function(e) {
+      e.preventDefault();
+      alert('内容受到保护，禁止复制！');
+    });
+
+    document.addEventListener('cut', function(e) {
+      e.preventDefault();
+      alert('内容受到保护，禁止剪切！');
+    });
+
+    // 禁用快捷键
+    document.addEventListener('keydown', function(e) {
+      // 禁用 Ctrl+C, Ctrl+X, Ctrl+A, Ctrl+S, Ctrl+P, Ctrl+U, Ctrl+I, F12
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.keyCode) {
+          case 67: // C
+          case 88: // X
+          case 65: // A
+          case 83: // S
+          case 80: // P
+          case 85: // U
+          case 73: // I
+            e.preventDefault();
+            alert('此操作受到保护，禁止使用！');
+            break;
+        }
+      }
+      // 禁用 F12
+      if (e.keyCode === 123) {
+        e.preventDefault();
+        alert('开发者工具已被禁用！');
+      }
+      // 禁用 F5 刷新
+      if (e.keyCode === 116) {
+        e.preventDefault();
+      }
+      // 禁用 Ctrl+Shift+I (另一种打开开发者工具的方式)
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+        e.preventDefault();
+        alert('开发者工具已被禁用！');
+      }
+      // 禁用 Ctrl+Shift+J (另一种打开开发者工具的方式)
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+        e.preventDefault();
+        alert('开发者工具已被禁用！');
+      }
+      // 禁用 Ctrl+Shift+C (另一种打开开发者工具的方式)
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+        e.preventDefault();
+        alert('开发者工具已被禁用！');
+      }
+    });
+
+    // 防止通过拖拽选择文本
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+
+    // 防止通过打印屏幕 (虽然无法完全阻止，但可以添加警告)
+    setInterval(function() {
+      if (window.outerWidth - window.innerWidth > 160 || 
+          window.outerHeight - window.innerHeight > 160) {
+        // 检测到可能打开了开发者工具或打印对话框
+        alert('检测到异常操作，请关闭开发者工具！');
+      }
+    }, 1000);
   </script>
-</body>
-<body>
-<input type="text" value="不可复制/粘贴的文本" readonly oncopy="return false" oncut="return false" onpaste="return false">
 </body>
 </html>
