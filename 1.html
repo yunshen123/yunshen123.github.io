@@ -1,58 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="renderer" content="webkit">
-    <meta name="referrer" content="no-referrer">
-    <title>记得转发保存呦~</title>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态内容编辑器</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 5px;}
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);border: 3px solid #ccc;border-radius: 20px;  }
-        * { margin: 0; padding: 0; }
-        img { width: 98%; max-width: 100%; height: auto; display: block; margin: 8px auto; border: 1px solid #ccc;border-radius: 5px; }
-        .tx-text, .postheader, .postfooter { text-align: center; }video {border: 1px solid #ccc;width: 98%;max-height: 200px;display: block;margin: 8px auto;border: 1px solid #ccc;border-radius: 5px;}
+        :root {
+            --color1: rgba(173, 216, 230, 0.3); /* 淡蓝 */
+            --color2: rgba(255, 182, 193, 0.3); /* 淡粉 */
+            --color3: rgba(152, 251, 152, 0.3); /* 淡绿 */
+            --color4: rgba(221, 160, 221, 0.3); /* 淡紫 */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .article-entry {
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .entry-title {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
+            padding-bottom: 10px;
+        }
+        .entry-content {
+            line-height: 1.6;
+            color: #34495e;
+            min-height: 20px;
+        }
+        .media-container {
+            margin: 15px 0;
+            text-align: center;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 8px 15px;
+            background: #4a6ee0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        [contenteditable="true"] {
+            border: 1px dashed #ccc;
+            padding: 8px;
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="tx-box mb20">
-            <div class="postfooter">
-                <h2>治愈之旅</h2>
-                <p>2024/6/27	12:34</p>
-            </div>
-            <div class="tx-text pd20-3 f-16">
-                <div class="postheader f-12">
-                    <a href=""><img src="https://pic.rmb.bdstatic.com/bjh/240528/3bc70a0c59bd5b823f18afb983b202d17770.png"></a>
-                </div>
-                <div class="postcontent f-13">
-<a href="https://ibb.co/KpRbxzxK"><img src="https://i.ibb.co/67Vr0J0X/photo-4-2026-06-02-17-09-07.jpg" alt="photo-4-2026-06-02-17-09-07" border="0"></a>
-</div>
-                <div class="postfooter">
-                    #公众号：黄土之上的曦黎屋
-					<br><br>
-                </div>
-            </div>
-        </div>
+    <div class="controls">
+        <button onclick="addTextEntry()">+ 文字条目</button>
+        <button onclick="addImageEntry()">+ 图片条目</button>
+        <button onclick="addVideoEntry()">+ 视频条目</button>
     </div>
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" defer></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" defer></script>
+
+    <div id="article-container">
+        <!-- 动态内容将在此生成 -->
+    </div>
+
     <script>
-        $(document).ready(function() {
-            $('[data-fancybox="gallery"]').fancybox({
-                buttons: ["close"],
-                loop: true,
-            });
-        });
+        // 背景色循环索引
+        let colorIndex = 0;
+        const bgColors = [
+            'var(--color1)',
+            'var(--color2)',
+            'var(--color3)',
+            'var(--color4)'
+        ];
+
+        // 动态创建条目容器
+        function createEntryElement() {
+            const entry = document.createElement('section');
+            entry.className = 'article-entry';
+            entry.style.backgroundColor = bgColors[colorIndex % bgColors.length];
+            colorIndex++;
+            return entry;
+        }
+
+        // 添加文字条目
+        function addTextEntry() {
+            const container = document.getElementById('article-container');
+            const entry = createEntryElement();
+            
+            entry.innerHTML = `
+                <h2 class="entry-title" contenteditable="true">点击编辑标题</h2>
+                <div class="entry-content" contenteditable="true">
+                    <p>点击编辑文字内容...</p>
+                </div>
+                <button onclick="this.parentElement.remove()">删除</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        // 添加图片条目
+        function addImageEntry() {
+            const container = document.getElementById('article-container');
+            const entry = createEntryElement();
+            
+            entry.innerHTML = `
+                <h2 class="entry-title" contenteditable="true">图片标题</h2>
+                <div class="media-container">
+                    <input type="file" accept="image/*" onchange="previewImage(this)">
+                    <img src="" alt="图片预览" style="max-width:100%; display:none; margin-top:10px;">
+                </div>
+                <div class="entry-content" contenteditable="true">
+                    <p>图片描述...</p>
+                </div>
+                <button onclick="this.parentElement.remove()">删除</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        // 添加视频条目
+        function addVideoEntry() {
+            const container = document.getElementById('article-container');
+            const entry = createEntryElement();
+            
+            entry.innerHTML = `
+                <h2 class="entry-title" contenteditable="true">视频标题</h2>
+                <div class="media-container">
+                    <input type="text" placeholder="输入视频URL" onchange="loadVideo(this)" style="width:100%; padding:8px;">
+                    <div class="video-placeholder" style="margin-top:10px;"></div>
+                </div>
+                <div class="entry-content" contenteditable="true">
+                    <p>视频说明...</p>
+                </div>
+                <button onclick="this.parentElement.remove()">删除</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        // 图片预览功能
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                const img = input.nextElementSibling;
+                
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 加载在线视频
+        function loadVideo(input) {
+            const videoContainer = input.nextElementSibling;
+            if (input.value) {
+                videoContainer.innerHTML = `
+                    <video controls width="100%">
+                        <source src="${input.value}" type="video/mp4">
+                        浏览器不支持视频播放
+                    </video>
+                `;
+            }
+        }
     </script>
 </body>
 </html>
-
-
-<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js?id=KRVcLqHbTVIsLUJp&ck=KRVcLqHbTVIsLUJp"></script>
-
-<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js?id=KRVcLqHbTVIsLUJp&ck=KRVcLqHbTVIsLUJp"></script>
-
-<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js?id=KRVcLqHbTVIsLUJp&ck=KRVcLqHbTVIsLUJp"></script>
