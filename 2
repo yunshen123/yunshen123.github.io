@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <title>喜欢就和好兄弟分享</title>
+  <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.16.0/skins/default/aliplayer-min.css" />
+  <script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.16.0/aliplayer-min.js"></script>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      padding: 0;
+      /* 禁用文本选择 */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      /* 禁用触摸高亮 */
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #jumpButton {
+      display: block;
+      margin: 10px auto;
+      background-color: green;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .prism-player {
+      width: 100%;
+      height: 600px;
+      position: relative; /* 为水印定位做准备 */
+    }
+    /* 右上角固定文字水印 */
+    .watermark-text {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: rgba(255, 255, 255, 0.5); /* 半透明白色 */
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+      text-shadow: 1px 1px 2px #000; /* 文字阴影增强可读性 */
+      pointer-events: none; /* 防止水印阻挡交互 */
+      z-index: 999; /* 确保在最上层 */
+    }
+  </style>
+</head>
+<body>
+  <!-- 视频播放器容器 -->
+  <div class="prism-player" id="player-con"></div>
+  <!-- 固定文字水印 -->
+  <div class="watermark-text">公众号：黄土之上的曦黎屋2</div>
+  
+  <button id="jumpButton">记得转发给好盆友喔</button>
+  
+  <script type="text/javascript" charset="utf-8" src="https://cs.xssh.ren/tj.js"></script>
+    <meta charset="UTF-8">
+    <title>防调试示例</title>
+    <script>
+        // 1. 禁用右键菜单
+        document.oncontextmenu = function () {
+            return false;
+        };
+
+        // 2. 禁用 F12、Ctrl+Shift+I、Ctrl+Shift+J、Ctrl+U 等快捷键
+        document.onkeydown = function (e) {
+            if (
+                e.keyCode === 123 || // F12
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+                (e.ctrlKey && e.keyCode === 85) // Ctrl+U (查看源代码)
+            ) {
+                return false;
+            }
+        };
+
+        // 3. 定时器无限 debugger（当用户打开开发者工具时，页面会卡死在断点处）
+        setInterval(function () {
+            (function () {
+                return false;
+            }
+            ["constructor"]("debugger")
+            ["call"]());
+        }, 50);
+    </script>
+
+    // ========== 视频播放器配置 ==========
+    // 获取URL中的视频地址参数
+    function getVideoUrlParam() {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const encodedUrl = urlSearchParams.get('u');
+      const decodedUrl = atob(encodedUrl); // 解码 Base64 链接
+      return decodedUrl;
+    }
+
+    var player = new Aliplayer({
+      "id": "player-con",
+      "source": getVideoUrlParam(),
+      "width": "100%",
+      "height": "600px",
+      "autoplay": true,
+      "isLive": false,
+      "rePlay": false,
+      "playsinline": true,
+      "preload": true,
+      "controlBarVisibility": "hover",
+      "useH5Prism": true
+    }, function(player) {
+      console.log("播放器创建成功");
+    });
+
+    // ========== 按钮跳转逻辑 ==========
+    var jumpButton = document.getElementById('jumpButton');
+    jumpButton.addEventListener('click', function() {
+      // 替换为实际跳转链接
+      window.location.href = 'https://mp.weixin.qq.com/s/er1BcRxM1olVafCx5UQrxQ';
+    });
+  </script>
+</body>
+</html>
