@@ -1,175 +1,198 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动态内容编辑器</title>
-    <style>
-        :root {
-            --color1: rgba(173, 216, 230, 0.3); /* 淡蓝 */
-            --color2: rgba(255, 182, 193, 0.3); /* 淡粉 */
-            --color3: rgba(152, 251, 152, 0.3); /* 淡绿 */
-            --color4: rgba(221, 160, 221, 0.3); /* 淡紫 */
-        }
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .article-entry {
-            padding: 20px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        .entry-title {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
-            padding-bottom: 10px;
-        }
-        .entry-content {
-            line-height: 1.6;
-            color: #34495e;
-            min-height: 20px;
-        }
-        .media-container {
-            margin: 15px 0;
-            text-align: center;
-        }
-        .controls {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        button {
-            padding: 8px 15px;
-            background: #4a6ee0;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        [contenteditable="true"] {
-            border: 1px dashed #ccc;
-            padding: 8px;
-            margin: 5px 0;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>11.05🍉合集</title>
+  <link href="https://web.sdk.qcloud.com/player/tcplayer/release/v4.2.1/tcplayer.min.css" rel="stylesheet" />
+  <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.2.1/libs/hls.min.0.13.2m.js"></script>
+  <script src="https://web.sdk.qcloud.com/player/tcplayer/release/v4.5.0/tcplayer.v4.5.0.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #e0f7ff, #ffffff);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: #111;
+      margin-bottom: 30px;
+    }
+
+    .video-block {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      margin-bottom: 30px;
+    }
+
+    .video-title {
+      display: block;
+      background: #0094ff;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-align: left; /* 修改为靠左对齐 */
+    }
+
+    .video-title:hover {
+      background: #0079cc;
+    }
+
+    .tcplayer-container {
+      display: none;
+      width: 100%;
+      height: 580px;
+      max-width: 1080px;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .jump-btn {
+      display: none;
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: #ff6a00;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .jump-btn:hover {
+      background-color: #e85c00;
+    }
+  </style>
 </head>
 <body>
-    <div class="controls">
-        <button onclick="addTextEntry()">+ 文字条目</button>
-        <button onclick="addImageEntry()">+ 图片条目</button>
-        <button onclick="addVideoEntry()">+ 视频条目</button>
-    </div>
+  <h1>11.05🍉合集</h1>
+  <div id="content">加载中...</div>
 
-    <div id="article-container">
-        <!-- 动态内容将在此生成 -->
-    </div>
+  <script>
+    const players = [];
+    let currentPlayingIndex = null;
 
-    <script>
-        // 背景色循环索引
-        let colorIndex = 0;
-        const bgColors = [
-            'var(--color1)',
-            'var(--color2)',
-            'var(--color3)',
-            'var(--color4)'
-        ];
+    function getLocalData() {
+      return {
+        data_mp4: [
+          { title: "吃🍉户外车震！粤N8K366车主你车震的事藏不住了！", url: "http://aod.cos.tx.xmcdn.com/storages/b3e6-audiofreehighqps/FD/AF/GAqh9sAM4M0hACAAAAQweE06.mp4" },
+          { title: "吃🍉兄弟们，这是真🐔🎱还是假🐔🎱？", url: "http://aod.cos.tx.xmcdn.com/storages/7e6f-audiofreehighqps/F3/4F/GKwRIW4M4M25ACAAAAQweIqM.mp4" },
+          { title: "吃🍉日电动车 神人！我就蹭蹭不进去！", url: "http://aod.cos.tx.xmcdn.com/storages/f3d1-audiofreehighqps/56/A0/GKwRIasM4M5OABVQEwQweObn.mp4" },
+          { title: "吃🍉探店 #站街女 这身材可以啊，", url: "http://aod.cos.tx.xmcdn.com/storages/e532-audiofreehighqps/DA/C2/GAqhg3wM4M6jACAAAAQweSel.mp4" },
+          { title: "吃🍉表演太卖力了， 你看把大哥整的都迷糊了", url: "http://aod.cos.tx.xmcdn.com/storages/0106-audiofreehighqps/C4/0A/GKwRIJIM4M7_ACAAAAQweV3x.mp4" },
+          { title: "吃🍉咬到 静脉 了 #狗咬人 哈尼 受伤 ！", url: "http://aod.cos.tx.xmcdn.com/storages/91c9-audiofreehighqps/C3/A6/GAqhfZkM4M9jAAxjUQQweabD.mp4" },
+          { title: "吃🍉缆车 C🖊 🚠 避孕套 装满了 “ 子弹 ", url: "http://aod.cos.tx.xmcdn.com/storages/3a14-audiofreehighqps/4B/02/GKwRIasM4NA6ABrgHQQweigz.mp4" },
+          { title: "吃🍉四川 网友发布：亲眼目睹，吓死人了", url: "http://aod.cos.tx.xmcdn.com/storages/5ad4-audiofreehighqps/12/5F/GAqhfZkM4NCTACAAAAQwelPt.mp4" },
+          { title: "吃🍉直播 #pk #鞭炮 #炸🖊低俗 ～", url: "http://aod.cos.tx.xmcdn.com/storages/afaa-audiofreehighqps/F9/38/GAqhntAM4NDtACAAAAQweoce.mp4" },
+          { title: "吃🍉非洲 对待 #小偷 绝不手软😂 打小偷 ", url: "http://aod.cos.tx.xmcdn.com/storages/f0d6-audiofreehighqps/F6/A2/GAqhVp8M4NFRACAAAAQwesT2.mp4" },
+          { title: "吃🍉一个过肩摔 直接干报废", url: "http://aod.cos.tx.xmcdn.com/storages/d914-audiofreehighqps/68/6D/GKwRIasM4NGQACAAAAQweunO.mp4" },
+          { title: "吃🍉大兄弟辛苦了为社会服务🌚", url: "http://aod.cos.tx.xmcdn.com/storages/6386-audiofreehighqps/9D/C4/GKwRIMAM4NHlACAAAAQwexuM.mp4" },
+        ],
+        btn_text: '加入吃瓜微信群',
+        btn_link: 'https://mp.weixin.qq.com/s/uGSBdlVlSHMpXLkxdOlHOA',
+        title: '转发＝更新的动力'
+      };
+    }
 
-        // 动态创建条目容器
-        function createEntryElement() {
-            const entry = document.createElement('section');
-            entry.className = 'article-entry';
-            entry.style.backgroundColor = bgColors[colorIndex % bgColors.length];
-            colorIndex++;
-            return entry;
-        }
+    async function loadVideos() {
+      const data = getLocalData();
+      document.title = data.title;
 
-        // 添加文字条目
-        function addTextEntry() {
-            const container = document.getElementById('article-container');
-            const entry = createEntryElement();
-            
-            entry.innerHTML = `
-                <h2 class="entry-title" contenteditable="true">点击编辑标题</h2>
-                <div class="entry-content" contenteditable="true">
-                    <p>点击编辑文字内容...</p>
-                </div>
-                <button onclick="this.parentElement.remove()">删除</button>
-            `;
-            container.appendChild(entry);
-        }
+      const container = document.getElementById('content');
+      container.innerHTML = '';
 
-        // 添加图片条目
-        function addImageEntry() {
-            const container = document.getElementById('article-container');
-            const entry = createEntryElement();
-            
-            entry.innerHTML = `
-                <h2 class="entry-title" contenteditable="true">图片标题</h2>
-                <div class="media-container">
-                    <input type="file" accept="image/*" onchange="previewImage(this)">
-                    <img src="" alt="图片预览" style="max-width:100%; display:none; margin-top:10px;">
-                </div>
-                <div class="entry-content" contenteditable="true">
-                    <p>图片描述...</p>
-                </div>
-                <button onclick="this.parentElement.remove()">删除</button>
-            `;
-            container.appendChild(entry);
-        }
+      data.data_mp4.forEach((item, index) => {
+        const videoId = "tcplayer-container-" + index;
+        const block = document.createElement('div');
+        block.className = 'video-block';
+        block.innerHTML = `
+          <span class="video-title" data-index="${index}">${index + 1}. ${item.title}</span>
+          <video id="${videoId}" class="tcplayer-container" preload="auto" playsinline webkit-playsinline></video>
+          <button class="jump-btn">${data.btn_text}</button>
+        `;
+        container.appendChild(block);
 
-        // 添加视频条目
-        function addVideoEntry() {
-            const container = document.getElementById('article-container');
-            const entry = createEntryElement();
-            
-            entry.innerHTML = `
-                <h2 class="entry-title" contenteditable="true">视频标题</h2>
-                <div class="media-container">
-                    <input type="text" placeholder="输入视频URL" onchange="loadVideo(this)" style="width:100%; padding:8px;">
-                    <div class="video-placeholder" style="margin-top:10px;"></div>
-                </div>
-                <div class="entry-content" contenteditable="true">
-                    <p>视频说明...</p>
-                </div>
-                <button onclick="this.parentElement.remove()">删除</button>
-            `;
-            container.appendChild(entry);
-        }
+        const jumpBtn = block.querySelector('.jump-btn');
+        jumpBtn.onclick = () => window.location.href = data.btn_link;
 
-        // 图片预览功能
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                const img = input.nextElementSibling;
-                
-                reader.onload = (e) => {
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+        setTimeout(() => {
+          const player = TCPlayer(videoId, { reportable: false });
+          player.src(item.url);
+          player.pause();
+          players[index] = player;
+        }, 0);
+      });
 
-        // 加载在线视频
-        function loadVideo(input) {
-            const videoContainer = input.nextElementSibling;
-            if (input.value) {
-                videoContainer.innerHTML = `
-                    <video controls width="100%">
-                        <source src="${input.value}" type="video/mp4">
-                        浏览器不支持视频播放
-                    </video>
-                `;
-            }
-        }
-    </script>
+      document.querySelectorAll('.video-title').forEach(titleElem => {
+        titleElem.addEventListener('click', function () {
+          const index = parseInt(this.getAttribute('data-index'));
+          if (currentPlayingIndex === index) return;
+
+          if (currentPlayingIndex !== null) {
+            const prevVideoElem = document.getElementById("tcplayer-container-" + currentPlayingIndex);
+            if (prevVideoElem) prevVideoElem.style.display = 'none';
+            const prevBlock = prevVideoElem?.parentElement;
+            prevBlock?.querySelector('.jump-btn')?.style.setProperty('display', 'none');
+            players[currentPlayingIndex]?.pause();
+          }
+
+          const currentVideoElem = document.getElementById("tcplayer-container-" + index);
+          currentVideoElem.style.display = 'block';
+          const currentBlock = this.parentElement;
+          currentBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          currentBlock.querySelector('.jump-btn').style.display = 'block';
+          players[index]?.play();
+          currentPlayingIndex = index;
+        });
+      });
+    }
+
+    loadVideos();
+  </script>
 </body>
+    <head>
+    <meta charset="UTF-8">
+    <title>防调试示例</title>
+    <script>
+        // 1. 禁用右键菜单
+        document.oncontextmenu = function () {
+            return false;
+        };
+
+        // 2. 禁用 F12、Ctrl+Shift+I、Ctrl+Shift+J、Ctrl+U 等快捷键
+        document.onkeydown = function (e) {
+            if (
+                e.keyCode === 123 || // F12
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+                (e.ctrlKey && e.keyCode === 85) // Ctrl+U (查看源代码)
+            ) {
+                return false;
+            }
+        };
+
+        // 3. 定时器无限 debugger（当用户打开开发者工具时，页面会卡死在断点处）
+        setInterval(function () {
+            (function () {
+                return false;
+            }
+            ["constructor"]("debugger")
+            ["call"]());
+        }, 50);
+    </script>
+</head>
 </html>
