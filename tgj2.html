@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自助投稿机</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #c9e2b3; /* 匹配原图浅绿花纹背景色调 */
+            background-image: radial-gradient(#b8da9c 20%, transparent 20%), radial-gradient(#b8da9c 20%, transparent 20%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        h2 {
+            text-align: center;
+            color: #333333;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+        label .required {
+            color: #ff4d4f;
+            margin-left: 4px;
+        }
+        label .hint {
+            font-size: 12px;
+            color: #777777;
+            font-weight: normal;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333333;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #73d13d;
+            box-shadow: 0 0 0 2px rgba(115, 209, 61, 0.2);
+        }
+        textarea {
+            resize: vertical;
+            font-family: monospace;
+        }
+        .input-tip {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-top: 4px;
+        }
+        /* 来源选择单选框样式 */
+        .radio-group {
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 12px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #52c41a;
+        }
+        .radio-group.active {
+            border-color: #52c41a;
+            background-color: #f6ffed;
+        }
+        /* 链接面板样式 */
+        .links-panel {
+            background-color: #f9f9f9;
+            border-left: 4px solid #1890ff;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        /* 按钮样式 */
+        .btn-submit {
+            width: 100%;
+            background-color: #73c289;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background-color: #5ea873;
+        }
+        /* 下载成功提示 */
+        .success-msg {
+            display: none;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #0050b3;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>自助投稿机</h2>
+    
+    <form id="submissionForm" onsubmit="generateHTML(event)">
+        <div class="form-group">
+            <label for="title">标题<span class="required">*</span> <span class="hint">格式: #coser名 - 图包名 #标签 [图片视频数量]</span></label>
+            <input type="text" id="title" required placeholder="示例: #奈沙酱nice - 猎狼女 #黑丝 #巨乳 [47P1V]">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="coverUrl">封面图片URL <span class="hint">（非必填）</span></label>
+                <input type="text" id="coverUrl" placeholder="请输入封面图片链接">
+            </div>
+            <div class="form-group">
+                <label for="author">署名 <span class="hint">（空着则匿名投稿）</span></label>
+                <input type="text" id="author" placeholder="请输入署名">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="imageContent">图片区内容 <span class="hint">（粘贴python脚本生成的txt内容）</span></label>
+            <textarea id="imageContent" rows="4" placeholder='请输入图片HTML标签，直接粘贴即可：&#10;<img src="图片链接1">&#10;<img src="图片链接2">&#10;<img src="图片链接3">'></textarea>
+            <div class="input-tip">直接粘贴图片HTML标签即可</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="videoContent">视频区内容 <span class="hint">（暂不提供视频上传，有视频需要上传找群主帮传）</span></label>
+            <textarea id="videoContent" rows="3" placeholder='请输入视频HTML标签，直接粘贴即可：&#10;<video controls><source src="视频链接"></video>&#10;...'></textarea>
+            <div class="input-tip">直接粘贴视频HTML标签即可</div>
+        </div>
+        
+        <div class="form-group">
+            <label>选择来源<span class="required">*</span></label>
+            <div class="radio-group" onclick="selectSource('self')">
+                <input type="radio" id="sourceSelf" name="sourceType" value="自购未流出分享" required>
+                <span style="font-size: 14px; color: #333;">自购未流出分享 <span style="color: #ff4d4f; font-weight: bold;">+90积分</span></span>
+            </div>
+            <div class="radio-group active" onclick="selectSource('shared')">
+                <input type="radio" id="sourceShared" name="sourceType" value="已流出转载" checked>
+                <span style="font-size: 14px; color: #333;">已流出转载 <span style="color: #52c41a; font-weight: bold;">+30积分</span></span>
+            </div>
+        </div>
+        
+        <div class="links-panel">
+            <div class="form-group">
+                <label for="xunleiLink">迅雷网盘分享链接<span class="required">*</span></label>
+                <input type="text" id="xunleiLink" required placeholder="请输入迅雷网盘分享链接">
+            </div>
+            <div class="form-group">
+                <label for="baiduLink">百度网盘分享链接<span class="required">*</span></label>
+                <input type="text" id="baiduLink" required placeholder="请输入百度网盘分享链接">
+            </div>
+            <div class="form-group">
+                <label for="wechatLink">微信群链接<span class="required">*</span></label>
+                <input type="text" id="wechatLink" required placeholder="请输入微信群链接">
+            </div>
+        </div>
+        
+        <button type="submit" class="btn-submit">生成HTML文件</button>
+    </form>
+    
+    <div id="successMsg" class="success-msg">
+        文件 "<span id="outputFileName">zyxj.html</span>" 已生成并下载！
+    </div>
+</div>
+
+<script>
+    // 切换单选框状态的视觉效果
+    function selectSource(type) {
+        const selfRadio = document.getElementById('sourceSelf');
+        const sharedRadio = document.getElementById('sourceShared');
+        const groups = document.querySelectorAll('.radio-group');
+        
+        if (type === 'self') {
+            selfRadio.checked = true;
+            groups[0].classList.add('active');
+            groups[1].classList.remove('active');
+        } else {
+            sharedRadio.checked = true;
+            groups[0].classList.remove('active');
+            groups[1].classList.add('active');
+        }
+    }
+
+    // 生成并下载 HTML 文件的核心逻辑
+    function generateHTML(event) {
+        event.preventDefault(); // 阻止表单默认提交行为
+        
+        // 获取输入的数据
+        const title = document.getElementById('title').value;
+        const coverUrl = document.getElementById('coverUrl').value || '无';
+        const author = document.getElementById('author').value || '匿名';
+        const imageContent = document.getElementById('imageContent').value;
+        const videoContent = document.getElementById('videoContent').value;
+        const sourceType = document.querySelector('input[name="sourceType"]:checked').value;
+        const xunleiLink = document.getElementById('xunleiLink').value;
+        const baiduLink = document.getElementById('baiduLink').value;
+        const wechatLink = document.getElementById('wechatLink').value;
+        
+        // 构建要生成的独立 HTML 文件的模板内容（你可以根据需要修改展示样式）
+        const generatedTemplate = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>\${title}</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 20px; color: #333; }
+        .post-card { background: #fff; max-width: 800px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 20px; color: #111; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .meta-info { font-size: 13px; color: #666; margin: 10px 0 20px 0; background: #f9f9f9; padding: 10px; border-radius: 4px; }
+        .media-section { margin: 20px 0; text-align: center; }
+        .media-section img { max-width: 100%; height: auto; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; }
+        .media-section video { max-width: 100%; margin-bottom: 15px; }
+        .download-box { background: #eef7ee; border: 1px dashed #52c41a; padding: 15px; border-radius: 6px; margin-top: 20px; }
+        .download-box a { color: #1890ff; display: block; margin: 5px 0; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="post-card">
+        <h1>\${title}</h1>
+        <div class="meta-info">
+            <strong>投稿人：</strong>\${author} &nbsp;|&nbsp; 
+            <strong>来源：</strong>\${sourceType} &nbsp;|&nbsp;
+            <strong>封面图：</strong>\${coverUrl}
+        </div>
+        
+        <div class="media-section">
+            \${videoContent ? '<h3>视频内容</h3>' + videoContent : ''}
+            
+            \${imageContent ? '<h3>图片内容</h3>' + imageContent : ''}
+        </div>
+        
+        <div class="download-box">
+            <h3>下载与社群链接</h3>
+            <p><strong>迅雷网盘：</strong><a href="\${xunleiLink}" target="_blank">\${xunleiLink}</a></p>
+            <p><strong>百度网盘：</strong><a href="\${baiduLink}" target="_blank">\${baiduLink}</a></p>
+            <p><strong>微信群链接：</strong><a href="\${wechatLink}" target="_blank">\${wechatLink}</a></p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+        // 统一文件名，你也可以用带有标题的名称例如：${title.substring(0,10)}.html
+        const fileName = "zyxj.html"; 
+        
+        // 创建 Blob 对象并触发出发下载
+        const blob = new Blob([generatedTemplate], { type: 'text/html;charset=utf-8;' });
+        const link = document.createElement("a");
+        
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // 底部显示已成功生成的提示框
+        document.getElementById('outputFileName').innerText = fileName;
+        document.getElementById('successMsg').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
