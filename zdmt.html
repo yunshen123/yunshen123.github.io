@@ -4472,10 +4472,19 @@ Dear Admin:The content on this page consists of cosplay photography as artistic 
 <div class="img-container"><span>图片加载中...请稍候</span><img src="https://image.acg.lol/file/2026/07/31/photo_100_2026-07-31_14-59-12.jpg" onload="this.previousElementSibling.style.display=&#39;none&#39;; this.style.display=&#39;block&#39;;" onerror="this.previousElementSibling.innerText=&#39;❌ 这张图片挂了哦,建议换网络刷新（如所有图片都出现此提醒则大概率是自身网络原因）&#39;;"/></div>
 
 <!-- 视频内容区域 -->
-<video controls style="width: 100%;">
-  <source src="https://a1.alibabausercontent.com/prod/feupload/user/7noma/e905ef0c-e0cf-4bf1-90d4-f0495162219c.mp4" type="video/mp4">
-  您的浏览器不支持 HTML5 视频。
-</video>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
+
+<div id="dplayer"></div>
+
+<script>
+  const dp = new DPlayer({
+      container: document.getElementById('dplayer'),
+      video: {
+          url: 'https://mcoss.gz-cmc.cn/cos/video/a048c4068b0a408abd401ef026e7087c/UGC/6736b5ebe4b0cd487e130027/2026-07-31/1785485129484060090.mp4',
+      },
+  });
+</script>
 
 
 
