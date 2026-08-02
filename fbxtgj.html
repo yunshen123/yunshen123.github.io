@@ -29,14 +29,6 @@
                 background: linear-gradient(180deg, #dbddbb 0%, #d5d88d 40%, #88b884 100%);
             }
 
-            .tgme_background {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-            }
-
             .tgme_background_pattern {
                 position: absolute;
                 left: 0;
@@ -44,9 +36,6 @@
                 width: 100%;
                 height: 100%;
                 mix-blend-mode: overlay;
-            }
-
-            .tgme_background_pattern.default {
                 opacity: 0.3;
                 background-image: url('https://telegram.org/img/tgme/pattern.svg?1');
             }
@@ -123,10 +112,6 @@
                 .form-row .form-group {
                     margin-bottom: 20px;
                 }
-
-                .form-row .form-group:last-child {
-                    margin-bottom: 0;
-                }
             }
 
             .radio-group {
@@ -187,41 +172,10 @@
                     opacity: 0;
                     transform: translateY(-10px);
                 }
-
                 to {
                     opacity: 1;
                     transform: translateY(0);
                 }
-            }
-
-            .file-upload {
-                border: 2px dashed #ccc;
-                border-radius: 8px;
-                padding: 30px;
-                text-align: center;
-                cursor: pointer;
-                transition: all 0.3s;
-                background: #fafafa;
-            }
-
-            .file-upload:hover {
-                border-color: #667eea;
-                background: #f5f6ff;
-            }
-
-            .file-upload.has-file {
-                border-color: #27ae60;
-                background: #f0fff4;
-            }
-
-            .file-upload input {
-                display: none;
-            }
-
-            .file-name {
-                margin-top: 10px;
-                color: #27ae60;
-                font-weight: 600;
             }
 
             .btn-submit {
@@ -235,6 +189,7 @@
                 font-weight: 600;
                 cursor: pointer;
                 transition: transform 0.2s, box-shadow 0.2s;
+                margin-top: 10px;
             }
 
             .btn-submit:hover {
@@ -242,26 +197,10 @@
                 box-shadow: 0 8px 20px rgba(107, 165, 135, 0.4);
             }
 
-            .btn-submit:active {
-                transform: translateY(0);
-            }
-
             .hint {
                 font-size: 13px;
                 color: #888;
                 margin-top: 6px;
-            }
-
-            .preview-section {
-                margin-top: 30px;
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 8px;
-                display: none;
-            }
-
-            .preview-section.show {
-                display: block;
             }
 
             .status {
@@ -294,9 +233,9 @@
             <form id="submitForm">
                 <div class="form-group">
                     <label>
-                        标题（必填，格式：#coser名 - 图包名 #标签 [图片视频数量]）<span class="required">*</span>
+                        标题（必填，格式：#博主名 - 图包名 #标签 [图片视频数量]）<span class="required">*</span>
                     </label>
-                    <input type="text" id="title" placeholder="示例：#奈汐酱nice - 猎狼女 #黑丝 #巨乳 [47P1V]" required>
+                    <input type="text" id="title" placeholder="示例：#示例名 - 专辑名 #标签 [47P1V]" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -309,19 +248,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>图片区内容（粘贴python脚本生成的txt内容）</label>
-                    <textarea id="imageContent" placeholder="请输入图片HTML标签，直接粘贴即可：
-&lt;img src=&quot;图片链接1&quot;&gt;
-&lt;img src=&quot;图片链接2&quot;&gt;
-&lt;img src=&quot;图片链接3&quot;&gt;
-..."></textarea>
+                    <label>图片区内容</label>
+                    <textarea id="imageContent" placeholder="请输入图片HTML标签，直接粘贴即可：&#10;&lt;img src=&quot;图片链接1&quot;&gt;&#10;&lt;img src=&quot;图片链接2&quot;&gt;"></textarea>
                     <p class="hint">直接粘贴图片HTML标签即可</p>
                 </div>
                 <div class="form-group">
-                    <label>视频区内容（暂不提供视频上传，有视频需要上传找群主帮传）</label>
-                    <textarea id="videoContent" placeholder="请输入视频HTML标签，直接粘贴即可：
-&lt;video controls&gt;&lt;source src=&quot;视频链接&quot;&gt;&lt;/video&gt;
-..."></textarea>
+                    <label>视频区内容</label>
+                    <textarea id="videoContent" placeholder="请输入视频HTML标签，直接粘贴即可：&#10;&lt;video controls&gt;&lt;source src=&quot;视频链接&quot;&gt;&lt;/video&gt;"></textarea>
                     <p class="hint">直接粘贴视频HTML标签即可</p>
                 </div>
                 <div class="form-group">
@@ -339,212 +272,203 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="hidden-fields" id="option2Fields">
                     <div class="form-group">
-                        <label>迅雷网盘分享链接</label>
-                        <input type="text" id="xunleiLink" placeholder="请输入迅雷网盘分享链接（可选）">
+                        <label>迅雷网盘分享链接（可选）</label>
+                        <input type="text" id="xunleiLink" placeholder="请输入迅雷网盘分享链接">
                     </div>
                     <div class="form-group">
-                        <label>百度网盘分享链接</label>
-                        <input type="text" id="baiduLink" placeholder="请输入百度网盘分享链接（可选）">
+                        <label>百度网盘分享链接（可选）</label>
+                        <input type="text" id="baiduLink" placeholder="请输入百度网盘分享链接">
                     </div>
                     <div class="form-group">
-                        <label>夸克文件链接</label>
-                        <input type="text" id="tgLink" placeholder="请输入夸克网盘分享链接（可选）">
+                        <label>夸克网盘分享链接（可选）</label>
+                        <input type="text" id="tgLink" placeholder="请输入夸克网盘分享链接">
                     </div>
                 </div>
+                
                 <button type="submit" class="btn-submit">生成HTML文件</button>
                 <div class="status" id="status"></div>
             </form>
         </div>
+
+        <script type="text/template" id="templateData"></script>
+
         <script src="https://unpkg.com/pinyin-pro@3.18.2/dist/index.js"></script>
-<script>
-    let templateContent = '';
+        <script>
+            let templateContent = '';
 
-    // 选项选择与展开/隐藏逻辑修复
-    function selectOption(num) {
-        // 更新单选框选中状态
-        const radio1 = document.getElementById('opt1');
-        const radio2 = document.getElementById('opt2');
-        
-        if (num === 1) {
-            radio1.checked = true;
-        } else if (num === 2) {
-            radio2.checked = true;
-        }
-
-        // 更新样式
-        document.querySelectorAll('.radio-item').forEach((item, index) => {
-            item.classList.toggle('active', index + 1 === num);
-        });
-
-        // 控制网盘链接区域显示/隐藏
-        const option2Fields = document.getElementById('option2Fields');
-        if (num === 2) {
-            option2Fields.classList.add('show');
-        } else {
-            option2Fields.classList.remove('show');
-        }
-    }
-
-    // 绑定 radio 自身的 change 事件，防止点击单选框圆点时未能正确展开
-    document.addEventListener('DOMContentLoaded', () => {
-        const radios = document.querySelectorAll('input[name="source"]');
-        radios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                if (e.target.id === 'opt2') {
-                    selectOption(2);
-                } else {
-                    selectOption(1);
+            function selectOption(num) {
+                const radio1 = document.getElementById('opt1');
+                const radio2 = document.getElementById('opt2');
+                
+                if (num === 1) {
+                    radio1.checked = true;
+                } else if (num === 2) {
+                    radio2.checked = true;
                 }
+
+                document.querySelectorAll('.radio-item').forEach((item, index) => {
+                    item.classList.toggle('active', index + 1 === num);
+                });
+
+                const option2Fields = document.getElementById('option2Fields');
+                if (num === 2) {
+                    option2Fields.classList.add('show');
+                } else {
+                    option2Fields.classList.remove('show');
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const radios = document.querySelectorAll('input[name="source"]');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        if (e.target.id === 'opt2') {
+                            selectOption(2);
+                        } else {
+                            selectOption(1);
+                        }
+                    });
+                });
+                
+                loadTemplate();
             });
-        });
-        
-        loadTemplate();
-    });
 
-    // 从URL参数获取署名
-    function getUrlParam(name) {
-        const params = new URLSearchParams(window.location.search);
-        return params.get(name);
-    }
-
-    // 页面加载时自动填充署名
-    const urlShuming = getUrlParam('shuming');
-    if (urlShuming) {
-        document.getElementById('authorName').value = decodeURIComponent(urlShuming);
-    }
-
-    // 模板内容解析
-    function loadTemplate() {
-        try {
-            const encoded = document.getElementById('templateData').textContent.trim();
-            const binary = atob(encoded);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            templateContent = new TextDecoder('utf-8').decode(bytes);
-        } catch (e) {
-            console.error('模板加载失败:', e);
-        }
-    }
-
-    // 表单提交处理
-    document.getElementById('submitForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const status = document.getElementById('status');
-        const title = document.getElementById('title').value.trim();
-        let coverUrl = document.getElementById('coverUrl').value.trim();
-        const authorName = document.getElementById('authorName').value.trim();
-        const imageContent = document.getElementById('imageContent').value.trim();
-        const videoContent = document.getElementById('videoContent').value.trim();
-
-        // 提取第一张图为封面
-        if (!coverUrl && imageContent) {
-            const imgMatch = imageContent.match(/<img[^>]+src=["']([^"']+)["']/i);
-            if (imgMatch) {
-                coverUrl = imgMatch[1];
-            }
-        }
-        const source = document.querySelector('input[name="source"]:checked')?.value;
-
-        if (!title) {
-            status.className = 'status error';
-            status.textContent = '标题不能为空！';
-            return;
-        }
-
-        if (!source) {
-            status.className = 'status error';
-            status.textContent = '请选择来源！';
-            return;
-        }
-
-        let result = templateContent;
-
-        // 替换标题
-        result = result.replace(/<h2 class="note-title">[^<]*<\/h2>/, `<h2 class="note-title">${escapeHtml(title)}</h2>`);
-        result = result.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeHtml(title)}">`);
-        result = result.replace(/<meta itemprop="name" content="[^"]*">/, `<meta itemprop="name" content="${escapeHtml(title)}">`);
-
-        // 替换封面图片
-        if (coverUrl) {
-            result = result.replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`);
-        }
-
-        // 更新时间
-        const now = new Date();
-        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-        result = result.replace(/<time class="note-time">[^<]*<\/time>/, `<time class="note-time">${timeStr}\t图片/视频加载不出刷新</time>`);
-
-        // 替换署名
-        const displayAuthor = authorName || '神秘投稿男';
-        result = result.replace(/<p class="note-author"[^>]*>[\s\S]*?<\/p>/, `<p class="note-author" style="font-size:14px;color:#999;">本页由 ${escapeHtml(displayAuthor)} 使用<a href="https://3j727xx6cb.coze.site" target="_blank">曦黎屋</a>制作</p>`);
-
-        // 插入图片与视频
-        if (imageContent) {
-            result = result.replace(/()/, `$1\n${imageContent}`);
-        }
-        if (videoContent) {
-            result = result.replace(/()/, `$1\n${videoContent}`);
-        }
-
-        // 处理网盘与下载选项
-        if (source === 'option1') {
-            result = result.replace(//, '未流出暂不提供下载，喜欢且负担得起请支持原博主～');
-        } else if (source === 'option2') {
-            const xunleiLink = document.getElementById('xunleiLink').value.trim();
-            const baiduLink = document.getElementById('baiduLink').value.trim();
-            const tgLink = document.getElementById('tgLink').value.trim();
-
-            let linksHtml = '';
-            if (xunleiLink) {
-                linksHtml += `<p>迅雷文件地址⬇<br><a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a><br><br><br></p>`;
-            }
-            if (baiduLink) {
-                linksHtml += `<p>百度文件地址⬇<br><a id="baidu" href="${baiduLink}">${escapeHtml(baiduLink)}</a><br><br><br></p>`;
-            }
-            if (tgLink) {
-                linksHtml += `<p>夸克文件地址⬇<br><a id="quark" href="${tgLink}">${escapeHtml(tgLink)}</a><br></p>`;
+            function getUrlParam(name) {
+                const params = new URLSearchParams(window.location.search);
+                return params.get(name);
             }
 
-            const option2Content = `原图/原视频文件过大在线图片/视频都是压缩过的，无压缩原图/原视频用下载图标即可⬇️\n` + linksHtml;
-            result = result.replace(//, option2Content);
-        }
+            const urlShuming = getUrlParam('shuming');
+            if (urlShuming) {
+                document.getElementById('authorName').value = decodeURIComponent(urlShuming);
+            }
 
-        // 生成拼音文件名并下载
-        let fileName = '';
-        if (typeof pinyinPro !== 'undefined') {
-            const arr = pinyinPro.pinyin(title, { toneType: 'none', type: 'array' });
-            fileName = arr.map(p => p.charAt(0)).join('');
-        } else {
-            fileName = title;
-        }
-        fileName = fileName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
-        if (!fileName) fileName = 'untitled';
-        fileName += '.html';
+            function loadTemplate() {
+                try {
+                    const templateEl = document.getElementById('templateData');
+                    const encoded = templateEl ? templateEl.textContent.trim() : '';
+                    if (encoded) {
+                        const binary = atob(encoded);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) {
+                            bytes[i] = binary.charCodeAt(i);
+                        }
+                        templateContent = new TextDecoder('utf-8').decode(bytes);
+                    }
+                } catch (e) {
+                    console.error('模板加载失败:', e);
+                }
+            }
 
-        const blob = new Blob([result], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+            document.getElementById('submitForm').addEventListener('submit', function(e) {
+                e.preventDefault();
 
-        status.className = 'status success';
-        status.textContent = `文件 "${fileName}" 已生成并下载！`;
-    });
+                const status = document.getElementById('status');
+                const title = document.getElementById('title').value.trim();
+                let coverUrl = document.getElementById('coverUrl').value.trim();
+                const authorName = document.getElementById('authorName').value.trim();
+                const imageContent = document.getElementById('imageContent').value.trim();
+                const videoContent = document.getElementById('videoContent').value.trim();
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-</script>
+                if (!coverUrl && imageContent) {
+                    const imgMatch = imageContent.match(/<img[^>]+src=["']([^"']+)["']/i);
+                    if (imgMatch) {
+                        coverUrl = imgMatch[1];
+                    }
+                }
+                const source = document.querySelector('input[name="source"]:checked')?.value;
+
+                if (!title) {
+                    status.className = 'status error';
+                    status.textContent = '标题不能为空！';
+                    return;
+                }
+
+                if (!source) {
+                    status.className = 'status error';
+                    status.textContent = '请选择来源！';
+                    return;
+                }
+
+                let result = templateContent || '<html><head><title></title></head><body></body></html>';
+
+                result = result.replace(/<h2 class="note-title">[^<]*<\/h2>/, `<h2 class="note-title">${escapeHtml(title)}</h2>`);
+                result = result.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeHtml(title)}">`);
+                result = result.replace(/<meta itemprop="name" content="[^"]*">/, `<meta itemprop="name" content="${escapeHtml(title)}">`);
+
+                if (coverUrl) {
+                    result = result.replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`);
+                }
+
+                const now = new Date();
+                const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                result = result.replace(/<time class="note-time">[^<]*<\/time>/, `<time class="note-time">${timeStr}\t图片/视频加载不出刷新</time>`);
+
+                const displayAuthor = authorName || '匿名投稿者';
+                result = result.replace(/<p class="note-author"[^>]*>[\s\S]*?<\/p>/, `<p class="note-author" style="font-size:14px;color:#999;">本页由 ${escapeHtml(displayAuthor)} 制作</p>`);
+
+                if (imageContent) {
+                    result = result.replace(//, `\n${imageContent}`);
+                }
+                if (videoContent) {
+                    result = result.replace(//, `\n${videoContent}`);
+                }
+
+                if (source === 'option1') {
+                    result = result.replace(//, '未流出暂不提供下载，喜欢且负担得起请支持原作者～');
+                } else if (source === 'option2') {
+                    const xunleiLink = document.getElementById('xunleiLink').value.trim();
+                    const baiduLink = document.getElementById('baiduLink').value.trim();
+                    const tgLink = document.getElementById('tgLink').value.trim();
+
+                    let linksHtml = '';
+                    if (xunleiLink) {
+                        linksHtml += `<p>迅雷文件地址⬇<br><a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a><br><br><br></p>`;
+                    }
+                    if (baiduLink) {
+                        linksHtml += `<p>百度文件地址⬇<br><a id="baidu" href="${baiduLink}">${escapeHtml(baiduLink)}</a><br><br><br></p>`;
+                    }
+                    if (tgLink) {
+                        linksHtml += `<p>夸克文件地址⬇<br><a id="quark" href="${tgLink}">${escapeHtml(tgLink)}</a><br></p>`;
+                    }
+
+                    const option2Content = `原图/原视频文件过大，在线文件为压缩版本，下载高清原图/视频请使用下方链接⬇️\n` + linksHtml;
+                    result = result.replace(//, option2Content);
+                }
+
+                let fileName = '';
+                if (typeof pinyinPro !== 'undefined') {
+                    const arr = pinyinPro.pinyin(title, { toneType: 'none', type: 'array' });
+                    fileName = arr.map(p => p.charAt(0)).join('');
+                } else {
+                    fileName = title;
+                }
+                fileName = fileName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+                if (!fileName) fileName = 'untitled';
+                fileName += '.html';
+
+                const blob = new Blob([result], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                status.className = 'status success';
+                status.textContent = `文件 "${fileName}" 已生成并下载！`;
+            });
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        </script>
     </body>
 </html>
