@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>自助投稿机</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                min-height: 100vh;
+                padding: 20px;
+                margin: 0;
+            }
+
+            .tgme_background_wrap {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                background: linear-gradient(180deg, #dbddbb 0%, #d5d88d 40%, #88b884 100%);
+            }
+
+            .tgme_background {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .tgme_background_pattern {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                mix-blend-mode: overlay;
+            }
+
+            .tgme_background_pattern.default {
+                opacity: 0.3;
+                background-image: url('https://telegram.org/img/tgme/pattern.svg?1');
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                padding: 40px;
+            }
+
+            h1 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 30px;
+                font-size: 28px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #555;
+                font-weight: 600;
+                font-size: 15px;
+            }
+
+            label .required {
+                color: #e74c3c;
+                margin-left: 4px;
+            }
+
+            input[type="text"], textarea {
+                width: 100%;
+                padding: 12px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 15px;
+                transition: border-color 0.3s;
+                font-family: inherit;
+            }
+
+            input[type="text"]:focus, textarea:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+
+            .form-row {
+                display: flex;
+                gap: 20px;
+            }
+
+            .form-row .form-group {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+            @media (max-width: 600px) {
+                .form-row {
+                    flex-direction: column;
+                    gap: 0;
+                }
+
+                .form-row .form-group {
+                    margin-bottom: 20px;
+                }
+
+                .form-row .form-group:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            .radio-group {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .radio-item {
+                display: flex;
+                align-items: center;
+                padding: 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .radio-item:hover {
+                border-color: #667eea;
+                background: #f8f9ff;
+            }
+
+            .radio-item.active {
+                border-color: #667eea;
+                background: #f0f2ff;
+            }
+
+            .radio-item input[type="radio"] {
+                width: 20px;
+                height: 20px;
+                margin-right: 12px;
+                accent-color: #667eea;
+            }
+
+            .radio-item label {
+                margin: 0;
+                cursor: pointer;
+                flex: 1;
+            }
+
+            .hidden-fields {
+                display: none;
+                margin-top: 15px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border-left: 4px solid #667eea;
+            }
+
+            .hidden-fields.show {
+                display: block;
+                animation: slideDown 0.3s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .file-upload {
+                border: 2px dashed #ccc;
+                border-radius: 8px;
+                padding: 30px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s;
+                background: #fafafa;
+            }
+
+            .file-upload:hover {
+                border-color: #667eea;
+                background: #f5f6ff;
+            }
+
+            .file-upload.has-file {
+                border-color: #27ae60;
+                background: #f0fff4;
+            }
+
+            .file-upload input {
+                display: none;
+            }
+
+            .file-name {
+                margin-top: 10px;
+                color: #27ae60;
+                font-weight: 600;
+            }
+
+            .btn-submit {
+                width: 100%;
+                padding: 15px;
+                background: linear-gradient(135deg, #6ba587 0%, #88b884 100%);
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                font-size: 18px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .btn-submit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(107, 165, 135, 0.4);
+            }
+
+            .btn-submit:active {
+                transform: translateY(0);
+            }
+
+            .hint {
+                font-size: 13px;
+                color: #888;
+                margin-top: 6px;
+            }
+
+            .preview-section {
+                margin-top: 30px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                display: none;
+            }
+
+            .preview-section.show {
+                display: block;
+            }
+
+            .status {
+                text-align: center;
+                padding: 15px;
+                border-radius: 8px;
+                margin-top: 15px;
+                display: none;
+            }
+
+            .status.success {
+                display: block;
+                background: #d4edda;
+                color: #155724;
+            }
+
+            .status.error {
+                display: block;
+                background: #f8d7da;
+                color: #721c24;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="tgme_background_wrap">
+            <div class="tgme_background_pattern default"></div>
+        </div>
+        <div class="container">
+            <h1>自助投稿机</h1>
+            <form id="submitForm">
+                <div class="form-group">
+                    <label>
+                        标题（必填，格式：#coser名 - 图包名 #标签 [图片视频数量]）<span class="required">*</span>
+                    </label>
+                    <input type="text" id="title" placeholder="示例：#奈汐酱nice - 猎狼女 #黑丝 #巨乳 [47P1V]" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>封面图片URL（非必填）</label>
+                        <input type="text" id="coverUrl" placeholder="请输入封面图片链接">
+                    </div>
+                    <div class="form-group">
+                        <label>署名（空着则匿名投稿）</label>
+                        <input type="text" id="authorName" placeholder="请输入署名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>图片区内容（粘贴python脚本生成的txt内容）</label>
+                    <textarea id="imageContent" placeholder="请输入图片HTML标签，直接粘贴即可：
+&lt;img src=&quot;图片链接1&quot;&gt;
+&lt;img src=&quot;图片链接2&quot;&gt;
+&lt;img src=&quot;图片链接3&quot;&gt;
+..."></textarea>
+                    <p class="hint">直接粘贴图片HTML标签即可</p>
+                </div>
+                <div class="form-group">
+                    <label>视频区内容（暂不提供视频上传，有视频需要上传找群主帮传）</label>
+                    <textarea id="videoContent" placeholder="请输入视频HTML标签，直接粘贴即可：
+&lt;video controls&gt;&lt;source src=&quot;视频链接&quot;&gt;&lt;/video&gt;
+..."></textarea>
+                    <p class="hint">直接粘贴视频HTML标签即可</p>
+                </div>
+                <div class="form-group">
+                    <label>
+                        选择来源<span class="required">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-item" onclick="selectOption(1)">
+                            <input type="radio" name="source" value="option1" id="opt1" required>
+                            <label for="opt1">自购未流出分享 +90积分</label>
+                        </div>
+                        <div class="radio-item" onclick="selectOption(2)">
+                            <input type="radio" name="source" value="option2" id="opt2">
+                            <label for="opt2">已流出转载 +30积分</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden-fields" id="option2Fields">
+                    <div class="form-group">
+                        <label>迅雷网盘分享链接</label>
+                        <input type="text" id="xunleiLink" placeholder="请输入迅雷网盘分享链接（可选）">
+                    </div>
+                    <div class="form-group">
+                        <label>百度网盘分享链接</label>
+                        <input type="text" id="baiduLink" placeholder="请输入百度网盘分享链接（可选）">
+                    </div>
+                    <div class="form-group">
+                        <label>夸克文件链接</label>
+                        <input type="text" id="tgLink" placeholder="请输入夸克网盘分享链接（可选）">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">生成HTML文件</button>
+                <div class="status" id="status"></div>
+            </form>
+        </div>
+        <script src="https://unpkg.com/pinyin-pro@3.18.2/dist/index.js"></script>
+        <script>
+            let templateContent = '';
+
+            // 选项选择
+            function selectOption(num) {
+                document.querySelectorAll('.radio-item').forEach((item, index) => {
+                    item.classList.toggle('active', index + 1 === num);
+                });
+                document.querySelectorAll('input[name="source"]').forEach((input, index) => {
+                    input.checked = index + 1 === num;
+                });
+
+                const option2Fields = document.getElementById('option2Fields');
+
+                if (num === 2) {
+                    option2Fields.classList.add('show');
+                } else {
+                    option2Fields.classList.remove('show');
+                }
+            }
+
+            // 从URL参数获取署名
+            function getUrlParam(name) {
+                const params = new URLSearchParams(window.location.search);
+                return params.get(name);
+            }
+
+            // 页面加载时自动填充署名
+            const urlShuming = getUrlParam('shuming');
+            if (urlShuming) {
+                document.getElementById('authorName').value = decodeURIComponent(urlShuming);
+            }
+
+            // 模板内容已嵌入页面（Base64编码）
+            function loadTemplate() {
+                try {
+                    const encoded = document.getElementById('templateData').textContent.trim();
+                    const binary = atob(encoded);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) {
+                        bytes[i] = binary.charCodeAt(i);
+                    }
+                    templateContent = new TextDecoder('utf-8').decode(bytes);
+                } catch (e) {
+                    console.error('模板加载失败:', e);
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadTemplate);
+            } else {
+                loadTemplate();
+            }
+
+            // 表单提交
+            document.getElementById('submitForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const status = document.getElementById('status');
+
+                const title = document.getElementById('title').value.trim();
+                let coverUrl = document.getElementById('coverUrl').value.trim();
+                const authorName = document.getElementById('authorName').value.trim();
+                const imageContent = document.getElementById('imageContent').value.trim();
+                const videoContent = document.getElementById('videoContent').value.trim();
+
+                // 如果未填写封面，自动提取图片区第一张图片URL
+                if (!coverUrl && imageContent) {
+                    const imgMatch = imageContent.match(/<img[^>]+src=["']([^"']+)["']/i);
+                    if (imgMatch) {
+                        coverUrl = imgMatch[1];
+                    }
+                }
+                const source = document.querySelector('input[name="source"]:checked')?.value;
+
+                if (!title) {
+                    status.className = 'status error';
+                    status.textContent = '标题不能为空！';
+                    return;
+                }
+
+                if (!source) {
+                    status.className = 'status error';
+                    status.textContent = '请选择来源！';
+                    return;
+                }
+
+                let result = templateContent;
+
+                // 替换标题（页面里的标题使用用户填写的原始标题）
+                result = result.replace(/<h2 class="note-title">[^<]*<\/h2>/, `<h2 class="note-title">${escapeHtml(title)}</h2>`);
+                result = result.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeHtml(title)}">`);
+                result = result.replace(/<meta itemprop="name" content="[^"]*">/, `<meta itemprop="name" content="${escapeHtml(title)}">`);
+
+                // 替换封面图片
+                if (coverUrl) {
+                    result = result.replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`);
+                }
+
+                // 自动更新时间为当前时间
+                const now = new Date();
+                const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                result = result.replace(/<time class="note-time">[^<]*<\/time>/, `<time class="note-time">${timeStr}\t图片/视频加载不出刷新</time>`);
+
+                // 替换署名行
+                const displayAuthor = authorName || '神秘投稿男';
+                result = result.replace(/<p class="note-author"[^>]*>[\s\S]*?<\/p>/, `<p class="note-author" style="font-size:14px;color:#999;">本页由 ${escapeHtml(displayAuthor)} 使用<a href="https://3j727xx6cb.coze.site" target="_blank">曦黎屋</a>制作</p>`);
+
+                // 插入图片内容
+                if (imageContent) {
+                    result = result.replace(/()/, `$1\n${imageContent}`);
+                }
+
+                // 插入视频内容
+                if (videoContent) {
+                    result = result.replace(/()/, `$1\n${videoContent}`);
+                }
+
+                // 处理选项
+                if (source === 'option1') {
+                    // 选项一：解除注释，显示内容
+                    result = result.replace(//, '未流出暂不提供下载，喜欢且负担得起请支持原博主～');
+                } else if (source === 'option2') {
+                    const xunleiLink = document.getElementById('xunleiLink').value.trim();
+                    const baiduLink = document.getElementById('baiduLink').value.trim();
+                    const tgLink = document.getElementById('tgLink').value.trim();
+
+                    // 构建链接内容（若未填写则对应位置留空或隐藏）
+                    let xunleiHtml = xunleiLink ? `<p>迅雷文件地址⬇<br><a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a><br><br><br></p>` : '';
+                    let baiduHtml = baiduLink ? `<p>百度文件地址⬇<br><a id="baidu" href="${baiduLink}">${escapeHtml(baiduLink)}</a><br><br><br></p>` : '';
+                    let quarkHtml = tgLink ? `<p>夸克文件地址⬇<br><a id="quark" href="${tgLink}">${escapeHtml(tgLink)}</a><br></p>` : '';
+
+                    const option2Content = `原图/原视频文件过大在线图片/视频都是压缩过的，无压缩原图/原视频用下载图标即可⬇️\n${xunleiHtml}${baiduHtml}${quarkHtml}`;
+
+                    result = result.replace(//, option2Content);
+                }
+
+                // 生成文件名：标题前十个字的拼音首字母，去掉所有符号
+                let fileName = '';
+                if (typeof pinyinPro !== 'undefined') {
+                    const arr = pinyinPro.pinyin(title, {
+                        toneType: 'none',
+                        type: 'array'
+                    });
+                    fileName = arr.map(p => p.charAt(0)).join('');
+                } else {
+                    fileName = title;
+                }
+                fileName = fileName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+                if (!fileName)
+                    fileName = 'untitled';
+                fileName += '.html';
+
+                // 下载生成的文件
+                const blob = new Blob([result], {
+                    type: 'text/html;charset=utf-8'
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                status.className = 'status success';
+                status.textContent = `文件 "${fileName}" 已生成并下载！`;
+            });
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        </script>
+    </body>
+</html>
