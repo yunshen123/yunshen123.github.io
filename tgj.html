@@ -357,190 +357,194 @@
                 <div class="status" id="status"></div>
             </form>
         </div>
-        <script src="https://unpkg.com/pinyin-pro@3.18.2/dist/index.js"></script>
-        <script>
-            let templateContent = '';
+<script>
+    let templateContent = '';
 
-            // 选项选择
-            function selectOption(num) {
-                document.querySelectorAll('.radio-item').forEach( (item, index) => {
-                    item.classList.toggle('active', index + 1 === num);
-                }
-                );
-                document.querySelectorAll('input[name="source"]').forEach( (input, index) => {
-                    input.checked = index + 1 === num;
-                }
-                );
+    // 选项选择与展开/隐藏逻辑修复
+    function selectOption(num) {
+        // 更新单选框选中状态
+        const radio1 = document.getElementById('opt1');
+        const radio2 = document.getElementById('opt2');
+        
+        if (num === 1) {
+            radio1.checked = true;
+        } else if (num === 2) {
+            radio2.checked = true;
+        }
 
-                const option2Fields = document.getElementById('option2Fields');
+        // 更新样式
+        document.querySelectorAll('.radio-item').forEach((item, index) => {
+            item.classList.toggle('active', index + 1 === num);
+        });
 
-                if (num === 2) {
-                    option2Fields.classList.add('show');
+        // 控制网盘链接区域显示/隐藏
+        const option2Fields = document.getElementById('option2Fields');
+        if (num === 2) {
+            option2Fields.classList.add('show');
+        } else {
+            option2Fields.classList.remove('show');
+        }
+    }
+
+    // 绑定 radio 自身的 change 事件，防止点击单选框圆点时未能正确展开
+    document.addEventListener('DOMContentLoaded', () => {
+        const radios = document.querySelectorAll('input[name="source"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.id === 'opt2') {
+                    selectOption(2);
                 } else {
-                    option2Fields.classList.remove('show');
+                    selectOption(1);
                 }
-            }
-
-            // 从URL参数获取署名
-            function getUrlParam(name) {
-                const params = new URLSearchParams(window.location.search);
-                return params.get(name);
-            }
-
-            // 页面加载时自动填充署名
-            const urlShuming = getUrlParam('shuming');
-            if (urlShuming) {
-                document.getElementById('authorName').value = decodeURIComponent(urlShuming);
-            }
-
-            // 模板内容已嵌入页面（Base64编码）
-            function loadTemplate() {
-                try {
-                    const encoded = document.getElementById('templateData').textContent.trim();
-                    const binary = atob(encoded);
-                    const bytes = new Uint8Array(binary.length);
-                    for (let i = 0; i < binary.length; i++) {
-                        bytes[i] = binary.charCodeAt(i);
-                    }
-                    templateContent = new TextDecoder('utf-8').decode(bytes);
-                } catch (e) {
-                    console.error('模板加载失败:', e);
-                }
-            }
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadTemplate);
-            } else {
-                loadTemplate();
-            }
-
-            // 表单提交
-            document.getElementById('submitForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const status = document.getElementById('status');
-
-                const title = document.getElementById('title').value.trim();
-                let coverUrl = document.getElementById('coverUrl').value.trim();
-                const authorName = document.getElementById('authorName').value.trim();
-                const imageContent = document.getElementById('imageContent').value.trim();
-                const videoContent = document.getElementById('videoContent').value.trim();
-
-                // 如果未填写封面，自动提取图片区第一张图片URL
-                if (!coverUrl && imageContent) {
-                    const imgMatch = imageContent.match(/<img[^>]+src=["']([^"']+)["']/i);
-                    if (imgMatch) {
-                        coverUrl = imgMatch[1];
-                    }
-                }
-                const source = document.querySelector('input[name="source"]:checked')?.value;
-
-                if (!title) {
-                    status.className = 'status error';
-                    status.textContent = '标题不能为空！';
-                    return;
-                }
-
-                if (!source) {
-                    status.className = 'status error';
-                    status.textContent = '请选择来源！';
-                    return;
-                }
-
-                let result = templateContent;
-
-                // 替换标题
-                result = result.replace(/<h2 class="note-title">[^<]*<\/h2>/, `<h2 class="note-title">${escapeHtml(title)}</h2>`);
-                result = result.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeHtml(title)}">`);
-                result = result.replace(/<meta itemprop="name" content="[^"]*">/, `<meta itemprop="name" content="${escapeHtml(title)}">`);
-
-                // 替换封面图片
-                if (coverUrl) {
-                    result = result.replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`);
-                }
-
-                // 自动更新时间为当前时间
-                const now = new Date();
-                const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-                result = result.replace(/<time class="note-time">[^<]*<\/time>/, `<time class="note-time">${timeStr}\t图片/视频加载不出刷新</time>`);
-
-                // 替换署名行
-                const displayAuthor = authorName || '神秘投稿男';
-                result = result.replace(/<p class="note-author"[^>]*>[\s\S]*?<\/p>/, `<p class="note-author" style="font-size:14px;color:#999;">本页由 ${escapeHtml(displayAuthor)} 使用<a href="https://3j727xx6cb.coze.site" target="_blank">曦黎屋</a>制作</p>`);
-
-                // 插入图片内容
-                if (imageContent) {
-                    result = result.replace(/()/, `$1\n${imageContent}`);
-                }
-
-                // 插入视频内容
-                if (videoContent) {
-                    result = result.replace(/()/, `$1\n${videoContent}`);
-                }
-
-                // 处理选项
-                if (source === 'option1') {
-                    result = result.replace(//, '未流出暂不提供下载，喜欢且负担得起请支持原博主～');
-                } else if (source === 'option2') {
-                    const xunleiLink = document.getElementById('xunleiLink').value.trim();
-                    const baiduLink = document.getElementById('baiduLink').value.trim();
-                    const tgLink = document.getElementById('tgLink').value.trim();
-
-                    // 动态拼接填写的网盘链接，未填写的链接自动跳过
-                    let linksHtml = '';
-                    if (xunleiLink) {
-                        linksHtml += `<p>迅雷文件地址⬇<br><a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a><br><br><br></p>`;
-                    }
-                    if (baiduLink) {
-                        linksHtml += `<p>百度文件地址⬇<br><a id="baidu" href="${baiduLink}">${escapeHtml(baiduLink)}</a><br><br><br></p>`;
-                    }
-                    if (tgLink) {
-                        linksHtml += `<p>夸克文件地址⬇<br><a id="quark" href="${tgLink}">${escapeHtml(tgLink)}</a><br></p>`;
-                    }
-
-                    const option2Content = `原图/原视频文件过大在线图片/视频都是压缩过的，无压缩原图/原视频用下载图标即可⬇️\n` + linksHtml;
-
-                    result = result.replace(//, option2Content);
-                }
-
-                // 生成文件名：标题前十个字的拼音首字母
-                let fileName = '';
-                if (typeof pinyinPro !== 'undefined') {
-                    const arr = pinyinPro.pinyin(title, {
-                        toneType: 'none',
-                        type: 'array'
-                    });
-                    fileName = arr.map(p => p.charAt(0)).join('');
-                } else {
-                    fileName = title;
-                }
-                fileName = fileName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
-                if (!fileName)
-                    fileName = 'untitled';
-                fileName += '.html';
-
-                // 下载生成的文件
-                const blob = new Blob([result],{
-                    type: 'text/html;charset=utf-8'
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                status.className = 'status success';
-                status.textContent = `文件 "${fileName}" 已生成并下载！`;
             });
+        });
+        
+        loadTemplate();
+    });
 
-            function escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+    // 从URL参数获取署名
+    function getUrlParam(name) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(name);
+    }
+
+    // 页面加载时自动填充署名
+    const urlShuming = getUrlParam('shuming');
+    if (urlShuming) {
+        document.getElementById('authorName').value = decodeURIComponent(urlShuming);
+    }
+
+    // 模板内容解析
+    function loadTemplate() {
+        try {
+            const encoded = document.getElementById('templateData').textContent.trim();
+            const binary = atob(encoded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
             }
-        </script>
+            templateContent = new TextDecoder('utf-8').decode(bytes);
+        } catch (e) {
+            console.error('模板加载失败:', e);
+        }
+    }
+
+    // 表单提交处理
+    document.getElementById('submitForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const status = document.getElementById('status');
+        const title = document.getElementById('title').value.trim();
+        let coverUrl = document.getElementById('coverUrl').value.trim();
+        const authorName = document.getElementById('authorName').value.trim();
+        const imageContent = document.getElementById('imageContent').value.trim();
+        const videoContent = document.getElementById('videoContent').value.trim();
+
+        // 提取第一张图为封面
+        if (!coverUrl && imageContent) {
+            const imgMatch = imageContent.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (imgMatch) {
+                coverUrl = imgMatch[1];
+            }
+        }
+        const source = document.querySelector('input[name="source"]:checked')?.value;
+
+        if (!title) {
+            status.className = 'status error';
+            status.textContent = '标题不能为空！';
+            return;
+        }
+
+        if (!source) {
+            status.className = 'status error';
+            status.textContent = '请选择来源！';
+            return;
+        }
+
+        let result = templateContent;
+
+        // 替换标题
+        result = result.replace(/<h2 class="note-title">[^<]*<\/h2>/, `<h2 class="note-title">${escapeHtml(title)}</h2>`);
+        result = result.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeHtml(title)}">`);
+        result = result.replace(/<meta itemprop="name" content="[^"]*">/, `<meta itemprop="name" content="${escapeHtml(title)}">`);
+
+        // 替换封面图片
+        if (coverUrl) {
+            result = result.replace(/<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${coverUrl}">`);
+        }
+
+        // 更新时间
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        result = result.replace(/<time class="note-time">[^<]*<\/time>/, `<time class="note-time">${timeStr}\t图片/视频加载不出刷新</time>`);
+
+        // 替换署名
+        const displayAuthor = authorName || '神秘投稿男';
+        result = result.replace(/<p class="note-author"[^>]*>[\s\S]*?<\/p>/, `<p class="note-author" style="font-size:14px;color:#999;">本页由 ${escapeHtml(displayAuthor)} 使用<a href="https://3j727xx6cb.coze.site" target="_blank">曦黎屋</a>制作</p>`);
+
+        // 插入图片与视频
+        if (imageContent) {
+            result = result.replace(/()/, `$1\n${imageContent}`);
+        }
+        if (videoContent) {
+            result = result.replace(/()/, `$1\n${videoContent}`);
+        }
+
+        // 处理网盘与下载选项
+        if (source === 'option1') {
+            result = result.replace(//, '未流出暂不提供下载，喜欢且负担得起请支持原博主～');
+        } else if (source === 'option2') {
+            const xunleiLink = document.getElementById('xunleiLink').value.trim();
+            const baiduLink = document.getElementById('baiduLink').value.trim();
+            const tgLink = document.getElementById('tgLink').value.trim();
+
+            let linksHtml = '';
+            if (xunleiLink) {
+                linksHtml += `<p>迅雷文件地址⬇<br><a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a><br><br><br></p>`;
+            }
+            if (baiduLink) {
+                linksHtml += `<p>百度文件地址⬇<br><a id="baidu" href="${baiduLink}">${escapeHtml(baiduLink)}</a><br><br><br></p>`;
+            }
+            if (tgLink) {
+                linksHtml += `<p>夸克文件地址⬇<br><a id="quark" href="${tgLink}">${escapeHtml(tgLink)}</a><br></p>`;
+            }
+
+            const option2Content = `原图/原视频文件过大在线图片/视频都是压缩过的，无压缩原图/原视频用下载图标即可⬇️\n` + linksHtml;
+            result = result.replace(//, option2Content);
+        }
+
+        // 生成拼音文件名并下载
+        let fileName = '';
+        if (typeof pinyinPro !== 'undefined') {
+            const arr = pinyinPro.pinyin(title, { toneType: 'none', type: 'array' });
+            fileName = arr.map(p => p.charAt(0)).join('');
+        } else {
+            fileName = title;
+        }
+        fileName = fileName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+        if (!fileName) fileName = 'untitled';
+        fileName += '.html';
+
+        const blob = new Blob([result], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        status.className = 'status success';
+        status.textContent = `文件 "${fileName}" 已生成并下载！`;
+    });
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+</script>
         <script type="text/template" id="templateData">
 Cgo8aHRtbD4KCTxoZWFkPgoJCSAgPG1ldGEgcHJvcGVydHk9Im9nOnRpdGxlIiBjb250ZW50PSLkvb/nlKjmoIfpopgiPgoJCSAgPG1ldGEgcHJvcGVydHk9Im9nOmltYWdlIiBjb250ZW50PSLliIbkuqvlsIHpnaLvvIzpu5jorqTkvb/nlKjnrKzkuIDlvKAiPgoJCSAgPG1ldGEgcHJvcGVydHk9Im9nOmRlc2NyaXB0aW9uIiBjb250ZW50PSLni6zkuZDkuZDkuI3lpoLkvJfkuZDkuZDvvIEmIzEwO+iuqeaci+WPi+i/m+e+pOeci+abtOWkmiI+CgoJCSAgPG1ldGEgcHJvcGVydHk9Im9nOnNpdGVfbmFtZSIgY29udGVudD0i5pum6buO5bGL5YiG5LqrIOWFrOS8l+WPt++8mum7hOWcn+S5i+S4iueahOabpum7juWxizIiPgoJCSAgPG1ldGEgcHJvcGVydHk9Im9nOmltYWdlOndpZHRoIiBjb250ZW50PSI0MzAiLz4KCQk8bWV0YSBwcm9wZXJ0eT0ib2c6aW1hZ2U6aGVpZ2h0IiBjb250ZW50PSIxMjAwIi8+CgkJPG1ldGEgbmFtZT0idHdpdHRlcjpjYXJkIiBjb250ZW50PSJzdW1tYXJ5X2xhcmdlX2ltYWdlIj4KCQk8bWV0YSBjaGFyc2V0PSJVTEYtOCI+CgkJCgkJPG1ldGEgbmFtZT0iZm9ybWF0LWRldGVjdGlvbiIgY29udGVudD0idGVsZXBob25lPW5vIj4KCQk8bWV0YSBpZD0idmlld3BvcnQiIG5hbWU9InZpZXdwb3J0IgoJCQljb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MSxtaW5pbXVtLXNjYWxlPTEsIG1heGltdW0tc2NhbGU9MSwgdXNlci1zY2FsYWJsZT1ubywgdmlld3BvcnQtZml0PWNvdmVyIj4KCQk8bWV0YSBpdGVtcHJvcD0ibmFtZSIgY29udGVudD0i5YaZ55yf5pS26JePIj4KCgkJPHNjcmlwdD4KCgkJCXZhciBJU19URVNUX0VOViA9IGZhbHNlOwoJCQl3aW5kb3cuQVBQSUQgPSAzMDAxMzsKCQkJd2luZG93Lmdfc3RhcnRfdGltZSA9ICtuZXcgRGF0ZSgpOwoJCQkKCQk8L3NjcmlwdD4KCQkKCQk8IS0tIOa3u+WKoOeUteiEkeerr+WbvueJh+S8mOWMluagt+W8jyAtLT4KCQk8c3R5bGU+CgkJCS8qIOeUteiEkeerr+WbvueJh+S8mOWMluagt+W8jyAqLwoJCQlAbWVkaWEgc2NyZWVuIGFuZCAobWluLXdpZHRoOiA3NjhweCkgewoJCQkJLyog5Zu+54mH5a655Zmo5qC35byPICovCgkJCQkuaW1nLWNvbnRhaW5lciB7CgkJCQl0ZXh0LWFsaWduOiBjZW50ZXI7CgkJCQkJbWFyaWduOiAyMHB4IDA7CgkJCQkJbWF4LXdpZHRoOiA4MDBweDsKCQkJCQltYXJnaW4tbGVmdDogYXV0bzsKCQkJCQltYXJnaW4tcmlnaHQ6IGF1dG87CgkJCQl9CgkJCQkKCQkJCS8qIOWbvueJh+agt+W8j+S8mOWMliAqLwoJCQkJLmltZy1jb250YWluZXIgaW1nIHsKCQkJCW1heC13aWR0aDogMTAwJTsKCQkJCWhlaWdodDogYXV0bzsKCQkJCQlib3JkZXItcmFkaXVzOiA4cHg7CgkJCQkJYm94LXNoYWRvdzogMCA0cHggMTJweCByZ2JhKDAsIDAsIDAsIDAuMSk7CgkJCQkJdHJhbnNpdGlvbjogdHJhbnNmb3JtIDAuM3MgZWFzZTsKCQkJCQljdXJzb3I6IHBvaW50ZXI7IC8qIOa3u+WKoOaJi+Wei+WFieaghyAqLwoJCQkJfQoJCQkJCgkJCQkvKiDlm77niYfmgqzlgZzmlYjmnpwgKi8KCQkJCS5pbWgtY29udGFpbmVyIGltZzpob3ZlciB7CgkJCQkJdHJhbnNmb3JtOiBzY2FsZSgxLjAyKTsKCQkJCQlib3gtc2hhZG93OiAwIDZweCAyMHB4IHJnYmEoMCwgMCwgMCwgMC4xNSk7CgkJCQl9CgkJCQkKCQkJCS8qIOWKoOi9veaPkOekuuaWh+Wtl+agt+W8jyAqLwoJCQkJLmltZy1jb250YWluZXIgc3BhbiB7CgkJCQlkaXNwbGF5OiBibG9jazsKCQkJCQlwYWRkaW5nOiAyMHB4OwoJCQkJCWNvbG9yOiAjNjY2OwoJCQkJZm9udC1zaXplOiAxNHB4OwoJCQkJCWJhY2tncm91bmQ6ICNmNWY1ZjU7CgkJCQkJYm9yZGVyLXJhZGl1czogOHB4OwoJCQkJCW1hcmdpbi1ib3R0b206IDEwcHg7CgkJCQl9CgkJCQkKCQkJCS8qIOmhtemdouaVtOS9k+W4g+WxgOS8mOWMliAqLwoJCQkJLnd5LW5vdGVzLXdyYXBwZXIgewoJCQkJCW1heC13aWR0aDogMTIwMHB4OwoJCQkJbWFyZ2luOiAwIGF1dG87CgkJCQkJcGFkZGluZzogNDBweCAyMHB4OwoJCQkJfQoJCQkJCgkJCQkvKiDmoIfpopjmoLflvI/kvJjljJYgKi8KCQkJCS5ub3RlLXRpdGxlIHsKCQkJCQlmb250LXNpemU6IDI0cHggIWltcG9ydGFudDsKCQkJCQlsaW5lLWhlaWdodDogMS40ICFpbXBvcnRhbnQ7CgkJCQkJbWFyZ2luLWJvdHRvbTogMjBweCAhaW1wb3J0YW50OwoJCQkJfQoJCQkJCgkJCQkvKiDml7bpl7TmoLflvI/kvJjljJYgKi8KCQkJCS5ub3RlLXRpbWUgewoJCQkJCWZvbnQtc2l6ZTogMTRweCAhaW1wb3J0YW50OwoJCQkJCWNvbG9yOiAjOTk5ICFpbXBvcnRhbnQ7CgkJCQkJbWFyZ2luLWJvdHRvbTogMzBweCAhaW1wb3J0YW50OwoJCQkJfQoJCQkJCgkJCQkvKiDmjInpkq7moLflvI/kvJjljJYgKi8KCQkJCS5idG4uYnRuLWhlcm8uYnRuLWxnIHsKCQkJCQlwYWRkaW5nOiAxNXB4IDQwcHggIWltcG9ydGFudDsKCQkJCQlmb250LXNpemU6IDE2cHggIWltcG9ydGFudDsKCQkJCQlib3JkZXItcmFkaXVzOiA4cHggIWltcG9ydGFudDsKCQkJCQltYXJnaW46IDMwcHggYXV0byAhaW1wb3J0YW50OwoJCQkJCWRpc3BsYXk6IGJsb2NrICFpbXBvcnRhbnQ7CgkJCQkJbWF4LXdpZHRoOiAzMDBweCAhaW1wb3J0YW50OwoJCQkJfQoJCQkJCgkJCQkvKiDop4bpopHmoLflvI/kvJjljJYgKi8KCQkJCXZpZGVvIHsKCQkJCQltYXgtd2lkdGg6IDEwMCUgIWltcG9ydGFudDsKCQkJCQloZWlnaHQ6IGF1dG8gIWltcG9ydGFudDsKCQkJCQlib3JkZXItcmFkaXVzOiA4cHggIWltcG9ydGFudDsKCQkJCQltYXJnaW46IDIwcHggYXV0byAhaW1wb3J0YW50OwoJCQkJCWRpc3BsYXk6IGJsb2NrICFpbXBvcnRhbnQ7CgkJCQl9CgkJCQkKCQkJCS8qIOmTvuaOpeagt+W8j+S8mOWMliAqLwoJCQkJI3h1bmxlaSB7CgkJCQkJd29yZC1icmVhazogYnJlYWstYWxsOwoJCQkJCWNvbG9yOiAjMDA3YmZmOwoJCQkJCXRleHQtZGVjb3JhdGlvbjogbm9uZTsKCQkJCQlwYWRkaW5nOiAxMHB4OwoJCQkJCWJhY2tncm91bmQ6ICNmOGY5ZmE7CgkJCQkJYm9yZGVyLXJhZGl1czogNHB4OwoJCQkJZGlzcGxheTogaW5saW5lLWJsb2NrOwoJCQkJCW1hcmdpbjogMTBweCAwOwoJCQkJfQoJCQkJCgkJCQkjeHVubGVpOmhvdmVyIHsKCQkJCQliYWNrZ3JvdW5kOiAjZTllY2VmOwoJCQkJCXRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lOwoJCQkJfQoJCQkJCgkJCQkvKiDlupXpg6jmta7nqpfkvJjljJYgKi8KCQkJCSNhZHZlcl9ib3ggewoJCQkJCXBvc2l0aW9uOiBmaXhlZCAhaW1wb3J0YW50OwoJCQkJCWJvdHRvbTogMjBweCAhaW1wb3J0YW50OwoJCQkJCWxlZnQ6IDUwJSAhaW1wb3J0YW50OwoJCQkJCXRyYW5zZm9ybTogdHJhbnNsYXRlWCgtNTAlKSAhaW1wb3J0YW50OwoJCQkJCXdpZHRoOiBhdXRvICFpbXBvcnRhbnQ7CgkJCQkJbWF4LXdpZHRoOiA0MDBweCAhaW1wb3J0YW50OwoJCQkJCXotaW5kZXg6IDEwMDAgIWltcG9ydGFudDsKCQkJCX0KCQkJCQoJCQkJI2FkdmVyX2JveCAuYnRuIHsKCQkJCQlwYWRkaW5nOiAxMnB4IDMwcHggIWltcG9ydGFudDsKCQkJCQlmb250LXNpemU6IDE0cHggIWltcG9ydGFudDsKCQkJCQlib3JkZXItcmFkaXVzOiA2cHggIWltcG9ydGFudDsKCQkJCX0KCQkJfQoJCQkKCQkJLyog56e75Yqo56uv5L+d5oyB5Y6f5pyJ5qC35byPICovCgkJCUBtZWRpYSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDc2N3B4KSB7CgkJCQkuaW1nLWNvbnRhaW5lciBpbWcgewoJCQkJCW1heC13aWR0aDogMTAwJTsKCQkJCQloZWlnaHQ6IGF1dG87CgkJCQkJY3Vyc29yOiBwb2ludGVyOyAvKiDnp7vliqjnq6/kuZ/mt7vliqDmiYvlnovlhYnmoIcgKi8KCQkJCX0KCQkJfQoJCQkKCQkJLyog5Zu+54mH5by55Ye65bGC5qC35byPICovCgkJCS5pbWFnZS1tb2RhbCB7CgkJCQlkaXNwbGF5OiBub25lOwoJCQkJcG9zaXRpb246IGZpeGVkOwoJCQkJei1pbmRleDogOTk5OTsKCQkJCWxlZnQ6IDA7CgkJCQl0b3A6IDA7CgkJCQl3aWR0aDogMTAwJTsKCQkJCWhlaWdodDogMTAwJTsKCQkJCWJhY2tncm91bmQtY29sb3I6IHJnYmEoMCwgMCwgMCwgMC45KTsKCQkJCWJhY2tkcm9wLWZpbHRlcjogYmx1cig1cHgpOwoJCQl9CgkJCQokJCS5pbWFnZS1tb2RhbC1jb250ZW50IHsKCQkJCXBvc2l0aW9uOiByZWxhdGl2ZTsKCQkJCW1hcmdpbjogYXV0bzsKCQkJCXBkZGluZzogMjBweDsKCQkJCXdpZHRoOiA5MCU7CgkJCQloZWlnaHQ6IDkwJTsKCQkJCWRpc3BsYXk6IGZsZXg7CgkJCQlmbGV4LWRpcmVjdGlvbjogY29sdW1uOwoJCQkJYWxpZ24taXRlbXM6IGNlbnRlcjsKCQkJCWp1c3RpZnktY29udGVudDogY2VudGVyOwoJCQl9CgkJCQokJCS5pbWFnZS1tb2RhbCBpbWcgewoJCQkJbWF4LXdpZHRoOiAxMDAlOwoJCQkJbWF4LWhlaWdodDogODAlOwoJCQkJb2JqZWN0LWZpdDogY29udGFpbjsKCQkJCWJvcmRlci1yYWRpdXM6IDhweDsKCQkJCWJveC1zaGFkb3zogIHmnInkuIA=
         </script>
