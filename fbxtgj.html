@@ -504,13 +504,25 @@
                     result = result.replace(/<!-- 选项一：[\s\S]*?未流出暂不提供下载，喜欢且负担得起请支持原博主～\s*-->/, '未流出暂不提供下载，喜欢且负担得起请支持原博主～');
                     // 确保选项二保持注释状态（删除或保持原样）
                 } else if (source === 'option2') {
-                    const xunleiLink = document.getElementById('xunleiLink').value.trim();
-                    const baiduLink = document.getElementById('baiduLink').value.trim();
-                    const tgLink = document.getElementById('tgLink').value.trim();
-                    }
+    const xunleiLink = document.getElementById('xunleiLink').value.trim();
+    const baiduLink = document.getElementById('baiduLink').value.trim();
+    const tgLink = document.getElementById('tgLink').value.trim();
 
-                    // 选项二：解除注释，替换链接（href用原始URL，文本显示用转义）
-                    const option2Content = `原图/原视频文件过大在线图片/视频都是压缩过的，无压缩原图/原视频用下载图标即可⬇️
+    // ✅ 删除了上面的校验，改为：填了就展示，没填就忽略
+    let linksHtml = '';
+    if (xunleiLink) {
+        linksHtml += `<p>迅雷文件地址⬇<br><a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a><br><br><br></p>`;
+    }
+    if (baiduLink) {
+        linksHtml += `<p>百度文件地址⬇<br><a id="baidu" href="${baiduLink}">${escapeHtml(baiduLink)}</a><br><br><br></p>`;
+    }
+    if (tgLink) {
+        linksHtml += `<p>夸克文件地址⬇<br><a id="quark" href="${tgLink}">${escapeHtml(tgLink)}</a><br></p>`;
+    }
+
+    const option2Content = `原图/原视频文件过大，无压缩原图/原视频用下载图标即可⬇️\n` + linksHtml;
+    result = result.replace(//, option2Content);
+}
 <p>迅雷文件地址⬇<br>
     <a id="xunlei" href="${xunleiLink}">${escapeHtml(xunleiLink)}</a>
 	<br>
