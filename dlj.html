@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>微信恰🍉群</title>
     <style>
-        /* 简单美化页面排版 */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -23,22 +22,38 @@
             text-align: center;
             max-width: 400px;
             width: 100%;
+            box-sizing: border-box;
+        }
+        /* 提示高亮框样式 */
+        .info-box {
+            background-color: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #d46b08;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
         }
         .card img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             margin-bottom: 20px;
+            display: block;
         }
         .btn {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #007bff;
             color: #ffffff;
             text-decoration: none;
             border-radius: 6px;
             font-size: 16px;
             transition: background-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
         }
         .btn:hover {
             background-color: #0056b3;
@@ -46,15 +61,18 @@
     </style>
 </head>
 <body>
+
+    <div class="card">
         <!-- 提示高亮框 -->
         <div class="info-box">
-            📢 重点提示：请勿重复进群，进群保持安静，等待更新即可
+            📢 重点提示：请勿重复进群，内容一致
+                新人进群保持安静，等待更新即可
         </div>
-    <div class="card">
+
+        <!-- 页面主图片 -->
         <img src="https://m.mingyihui.net/upload/conversation/20260906/1327055448.jpeg" alt="展示图片">
 
-        <br>
-
+        <!-- 跳转按钮 -->
         <a href="https://pan.xunlei.com/s/VP0D6K6_j13MXfgvKjJsGbmsA1?pwd=yt2q#" target="_blank" class="btn">点击此处可观看往期文件内容</a>
     </div>
 
